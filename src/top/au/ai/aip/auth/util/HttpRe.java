@@ -20,7 +20,7 @@ public class HttpRe {
     private static String Token = "24.cfeb91d5877abf961b35feaeff4bcfd9.2592000.1588297294.282335-18979408";
     public static void request() throws IOException {
         //设置图片
-        byte[] bytes1 = HttpRe.readFileByBytes("C:\\Users\\Administrator.WIN-IHVBI18K8J9\\Pictures\\0.jpg");
+        byte[] bytes1 = HttpRe.readFileByBytes("C:\\Users\\Administrator.WIN-IHVBI18K8J9\\Pictures\\Camera Roll\\0.jpg");
         String image1 = Base64Util.encode(bytes1);
 
         String url = "https://aip.baidubce.com/rest/2.0/face/v3/detect";
@@ -38,7 +38,7 @@ public class HttpRe {
 
             String result = HttpUtil.post(url, accessToken, "application/json", param);
 
-            System.out.println("比对结果："+result);
+            System.out.println("识别结果："+result);
 
         } catch (Exception e) {
             e.printStackTrace();
