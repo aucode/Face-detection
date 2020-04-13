@@ -1,11 +1,14 @@
 package top.au.ai.aip.auth.util;
 
 import com.baidu.aip.util.Base64Util;
+import jdk.nashorn.internal.parser.JSONParser;
+import net.sf.json.*;
 import net.sf.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -15,30 +18,52 @@ import java.util.*;
  * @Explain
  * @Date 2020-04-01 10:08
  */
-public class HttpRe {
+public class HttpRequest {
 
+    private static ProcessingResult processingResult;
     private static String Token = "24.cfeb91d5877abf961b35feaeff4bcfd9.2592000.1588297294.282335-18979408";
-    public static void request() throws IOException {
+    /*
+    * @Author: Du Yi Code
+    * @Description: 请求方法
+    * @Date: 8:55 2020/4/13
+    * @Param: [flieNameUrl 识别文件路径, requestRule 请求规则]
+    * @Return: void
+    */
+    public static void request(String flieNameUrl,String tokenStr,String httpUrl,String contentTypeStr,
+                               String requestRule) throws IOException {
         //设置图片
-        byte[] bytes1 = HttpRe.readFileByBytes("C:\\Users\\Administrator.WIN-IHVBI18K8J9\\Pictures\\Camera Roll\\0.jpg");
-        String image1 = Base64Util.encode(bytes1);
+//        byte[] bytes =
+//                HttpRequest.readFileByBytes("C:\\Users\\Administrator.WIN-IHVBI18K8J9\\Pictures\\Camera Roll\\0.jpg");
+        byte[] bytes = HttpRequest.readFileByBytes(flieNameUrl);
+        String image = Base64Util.encode(bytes);
 
         String url = "https://aip.baidubce.com/rest/2.0/face/v3/detect";
         try {
-            String str = "age,mask,beauty,emotion,face_shape,gender";
+            //String str = "age,mask,beauty,emotion,face_shape,gender";
+            String str = requestRule;
             Map<String, Object> map = new HashMap<>();
-            map.put("image", image1);
+            map.put("image", image);
             map.put("face_field", str);
-
             map.put("image_type", "BASE64");
 
-            String param = HttpRe.toJson(map);
+            String param = HttpRequest.toJson(map);
             // 注意这里仅为了简化编码每一次请求都去获取access_token，线上环境access_token有过期时间， 客户端可自行缓存，过期后重新获取。
-            String accessToken = Token;
+            String accessToken = tokenStr;
+            //contentTypeStr
+            //String result = HttpUtil.post(url, accessToken, "application/json", param);
+            //设置请求头
+            String contentType = contentTypeStr;
+            String result = HttpUtil.post(url, accessToken, contentType, param);
+            //处理数据
+            processingResult.ProcessingFaceData(result);
 
-            String result = HttpUtil.post(url, accessToken, "application/json", param);
-
-            System.out.println("识别结果："+result);
+            //转json
+//            com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSON.parseObject(result);
+//            com.alibaba.fastjson.JSONObject jsonObject1 = com.alibaba.fastjson.JSON.parseObject(jsonObject.getString("result"));
+//            String face_list = jsonObject1.getString("face_list");
+//            com.alibaba.fastjson.JSONObject jsonObject3 = com.alibaba.fastjson.JSON.parseObject(face_list);
+            //System.out.println("年龄 => "+jsonObject3);
+            //System.out.println("颜值 => "+jsonObject3);
 
         } catch (Exception e) {
             e.printStackTrace();
